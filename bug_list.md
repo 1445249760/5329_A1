@@ -264,6 +264,13 @@ All 37 intentional bugs identified and fixed. Categorised by file.
 
 ### Evaluation
 
+### 42. `Optimizers/optimizer.py` — Adam learning rate hardcoded to `1.0`
+- **Bug:** `lr=1.0` is hardcoded in the `adam` factory function, ignoring `args.learning_rate`
+- **Fix:** `lr=args.learning_rate`
+- **Impact:** User-specified `learning_rate` has no effect on Adam; effective lr is always `1.0` regardless of configuration, causing loss explosion and making Adam unusable
+
+---
+
 ### 41. `EvaluateTools/eval_utils.py` — `argmax` on wrong dimension in `run_eval`
 - **Bug:** `torch.argmax(p1, dim=0)` and `torch.argmax(p2, dim=0)` — takes argmax over the batch dimension
 - **Fix:** `torch.argmax(p1, dim=1)` and `torch.argmax(p2, dim=1)` — takes argmax over the sequence/context dimension
@@ -316,5 +323,6 @@ All 37 intentional bugs identified and fixed. Categorised by file.
 | 39 | `Schedulers/lambda_scheduler.py` | Scheduler | Add vs multiply |
 | 40 | `Schedulers/step_scheduler.py` | Scheduler | Multiply vs power |
 | 41 | `EvaluateTools/eval_utils.py` | Evaluation | Wrong argmax dim |
+| 42 | `Optimizers/optimizer.py` | Optimizer | Adam lr hardcoded to 1.0 |
 
-**Total: 41 bugs identified and fixed.**
+**Total: 42 bugs identified and fixed.**
