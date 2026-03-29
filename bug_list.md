@@ -262,6 +262,15 @@ All 37 intentional bugs identified and fixed. Categorised by file.
 
 ---
 
+### Evaluation
+
+### 41. `EvaluateTools/eval_utils.py` — `argmax` on wrong dimension in `run_eval`
+- **Bug:** `torch.argmax(p1, dim=0)` and `torch.argmax(p2, dim=0)` — takes argmax over the batch dimension
+- **Fix:** `torch.argmax(p1, dim=1)` and `torch.argmax(p2, dim=1)` — takes argmax over the sequence/context dimension
+- **Impact:** Predicted start/end positions are batch indices (values 0–7) instead of context token positions; the model always predicts spans at the very beginning of the context, causing F1 to stay in the single digits (~4–5%)
+
+---
+
 ## Summary Table
 
 | # | File | Category | Type |
@@ -306,5 +315,6 @@ All 37 intentional bugs identified and fixed. Categorised by file.
 | 38 | `Schedulers/cosine_scheduler.py` | Scheduler | Missing 0.5 + math.PI |
 | 39 | `Schedulers/lambda_scheduler.py` | Scheduler | Add vs multiply |
 | 40 | `Schedulers/step_scheduler.py` | Scheduler | Multiply vs power |
+| 41 | `EvaluateTools/eval_utils.py` | Evaluation | Wrong argmax dim |
 
-**Total: 40 bugs identified and fixed.**
+**Total: 41 bugs identified and fixed.**
