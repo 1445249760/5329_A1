@@ -278,6 +278,23 @@ All 37 intentional bugs identified and fixed. Categorised by file.
 
 ---
 
+### 43. `Models/encoder.py` — `self.scale` unused in attention
+- **Bug:** `attn = torch.bmm(q, k.transpose(1, 2))` — missing scale factor
+- **Fix:** `attn = torch.bmm(q, k.transpose(1, 2)) * self.scale`
+- **Impact:** Scaled dot-product attention lacks `1/√d_k` scaling; dot products grow too large, softmax saturates, gradients vanish, attention degenerates toward one-hot
+
+### 44. `Models/encoder.py` — Q/K/V permute order wrong in multi-head attention
+- **Bug:** `q.permute(2, 0, 1, 3)` — puts num_heads first, then batch
+- **Fix:** `q.permute(0, 2, 1, 3)` — keeps batch first, then num_heads
+- **Impact:** When reshaped to `[batch*heads, length, d_k]`, batch and head dimensions are interleaved incorrectly; attention is computed across samples from different batches, producing completely wrong outputs
+
+### 45. `EvaluateTools/evaluate.py` — Wrong checkpoint key when loading model
+- **Bug:** `model.load_state_dict(ckpt["model"])` — key `"model"` does not exist
+- **Fix:** `model.load_state_dict(ckpt["model_state"])` — matches the key used in `train_utils.py:49`
+- **Impact:** `KeyError` on every evaluation run; model weights can never be loaded, evaluation is completely broken
+
+---
+
 ## Summary Table
 
 | # | File | Category | Type |
@@ -324,5 +341,8 @@ All 37 intentional bugs identified and fixed. Categorised by file.
 | 40 | `Schedulers/step_scheduler.py` | Scheduler | Multiply vs power |
 | 41 | `EvaluateTools/eval_utils.py` | Evaluation | Wrong argmax dim |
 | 42 | `Optimizers/optimizer.py` | Optimizer | Adam lr hardcoded to 1.0 |
+| 43 | `Models/encoder.py` | Encoder | self.scale unused in attention |
+| 44 | `Models/encoder.py` | Encoder | Wrong permute order in Q/K/V |
+| 45 | `EvaluateTools/evaluate.py` | Evaluation | Wrong checkpoint key |
 
-**Total: 42 bugs identified and fixed.**
+**Total: 45 bugs identified and fixed.**
